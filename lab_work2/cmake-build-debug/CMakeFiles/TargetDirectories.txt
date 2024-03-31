@@ -1,0 +1,3 @@
+D:/PGUPS/c++/lab_work2/cmake-build-debug/CMakeFiles/lab_work2.dir
+D:/PGUPS/c++/lab_work2/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/PGUPS/c++/lab_work2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
