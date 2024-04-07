@@ -5,6 +5,7 @@
 #include <tuple>
 #include <queue>
 #include <limits>
+#include <unordered_set>
 
 
 WeightedGraph::WeightedGraph(int V) : V(V) {
@@ -71,21 +72,38 @@ void WeightedGraph::union_sets(std::vector<int> &parent, int x, int y) {
     parent[yroot] = xroot;
 }
 
+struct pair_hash {
+    template<class T1, class T2>
+    std::size_t operator()(const std::pair<T1, T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+};
+
 void WeightedGraph::visualizeWithGraphviz(const std::string &outputFilename) {
     std::string dotFilename = "temp_graph.dot";
     std::ofstream file(dotFilename);
 
-    file << "digraph G {\n";
+    file << "graph G {\n";
+    file << "    overlap=false;\n"; // Избегаем перекрытия вершин
 
     // Добавляем вершины
     for (int i = 0; i < V; ++i) {
         file << "    \"" << i << "\" [label=\"" << i << "\"];\n";
     }
 
-    // Добавляем ребра с весами
+    // Используем set для отслеживания уже добавленных ребер
+    std::unordered_set<std::pair<int, int>, pair_hash> addedEdges;
+
+    // Добавляем ребра с весами, избегая повторного связывания
     for (int v = 0; v < V; ++v) {
         for (auto w: adj[v]) {
-            file << "    \"" << v << "\" -> \"" << w.first << "\" [label=\"" << w.second << "\"];\n";
+            std::pair<int, int> edge = std::minmax(v, w.first);
+            if (addedEdges.find(edge) == addedEdges.end()) {
+                file << "    \"" << v << "\" -- \"" << w.first << "\" [label=\"" << w.second << "\"];\n";
+                addedEdges.insert(edge);
+            }
         }
     }
 
@@ -94,7 +112,6 @@ void WeightedGraph::visualizeWithGraphviz(const std::string &outputFilename) {
     std::string command = "dot -Tpng " + dotFilename + " -o " + outputFilename;
     system(command.c_str());
 }
-
 
 
 std::vector<std::tuple<int, int, int>> WeightedGraph::prim() {
@@ -146,7 +163,7 @@ std::vector<int> WeightedGraph::bellman_ford(int src) {
 
     for (int i = 1; i <= V - 1; i++) {
         for (int u = 0; u < V; u++) {
-            for (auto& edge : adj[u]) {
+            for (auto &edge: adj[u]) {
                 int v = edge.first;
                 int weight = edge.second;
                 if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
@@ -156,7 +173,7 @@ std::vector<int> WeightedGraph::bellman_ford(int src) {
     }
 
     for (int u = 0; u < V; u++) {
-        for (auto& edge : adj[u]) {
+        for (auto &edge: adj[u]) {
             int v = edge.first;
             int weight = edge.second;
             if (dist[u] != INT_MAX && dist[u] + weight < dist[v])

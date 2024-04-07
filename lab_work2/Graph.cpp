@@ -32,22 +32,18 @@ void Graph::BFS(int s) {
     }
 }
 
-void Graph::DFSForest(int v, std::vector<bool> &visited, std::string &currentTree) {
-    visited[v] = true;
-    currentTree += std::to_string(v) + " ";
-
-    bool isTree = true;
-    for (auto i = adj[v].begin(); i != adj[v].end(); ++i) {
-        if (!visited[*i]) {
-            DFSForest(*i, visited, currentTree);
-            isTree = false; // Если есть непосещенные соседи, это не конец дерева
+void Graph::DFSForest() {
+    std::vector<bool> visited(V, false);
+    for (int i = 0; i < V; ++i) {
+        if (!visited[i]) {
+            std::vector<int> result;
+            DFS(i, visited, result);
+            std::cout << "Tree: ";
+            for (int u : result) {
+                std::cout << u << " ";
+            }
+            std::cout << std::endl;
         }
-    }
-
-    // Если достигнут конец дерева (вершины без непосещенных соседей), выводим дерево
-    if (isTree) {
-        std::cout << currentTree << std::endl;
-        currentTree.clear(); // Очищаем строку для следующего дерева
     }
 }
 

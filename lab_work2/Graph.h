@@ -24,7 +24,7 @@ public:
 
     void visualizeWithGraphviz(const std::string &outputFilename);
 
-    void DFSForest(int v, std::vector<bool>& visited, std::string &currentTree);
+    void DFSForest();
 
     int V;
 

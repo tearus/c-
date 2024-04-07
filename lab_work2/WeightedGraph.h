@@ -8,7 +8,7 @@ class WeightedGraph {
     std::vector<std::pair<int, int>>* adj; // Список смежности
 
 public:
-    WeightedGraph(int V);
+    explicit WeightedGraph(int V);
     ~WeightedGraph();
 
     void addEdge(int v, int w, int weight);
@@ -16,7 +16,6 @@ public:
 
     void visualizeWithGraphviz(const std::__cxx11::basic_string<char> &outputFilename);
     std::vector<std::tuple<int, int,int>> prim();
-    int minKey(std::vector<int>& key, std::vector<bool>& visited);
 
     std::vector<int> bellman_ford(int src);
 
